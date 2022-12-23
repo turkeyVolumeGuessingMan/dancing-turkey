@@ -1,3 +1,4 @@
+import lerkey from "../../lib/lerkey";
 import { StopList } from "../../lib/rng";
 import { GetRoomDesc } from "../../lib/room";
 
@@ -19,8 +20,8 @@ const startRoom = {
         {
             label: `Look around`,
 
-            action: () => {
-                return <GetRoomDesc />
+            action: (turkey: lerkey) => {
+                return <GetRoomDesc turkey={turkey} />
             }
         },
         {

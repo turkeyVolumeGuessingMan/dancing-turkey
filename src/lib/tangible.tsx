@@ -25,6 +25,18 @@ type Tangible = {
     firstDesc?: () => ReactElement;
 
     /**
+     * Get a one or two word description for the tangible object.
+     * @returns Description in React elements.
+     */
+    specialDesc?: () => ReactElement;
+
+    /**
+     * Get a one or two word description for the tangible object.
+     * @returns Description in React elements.
+     */
+    shortDesc?: () => ReactElement;
+
+    /**
      * List of commands to be associated with this game tangible.
      * @returns Command list.
      */

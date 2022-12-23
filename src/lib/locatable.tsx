@@ -1,7 +1,8 @@
 
 type Locatable = {
 
-    room: string
+    room?: string,
+    inside?: string,
 
 }
 export default Locatable;

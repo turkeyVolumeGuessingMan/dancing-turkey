@@ -1,15 +1,13 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState } from "react";
 import Command from "./command";
 import Cranberries from "./cranberries";
 import MashedPotato from "./mashedPotato";
 import SpoiledPotato from "./spoiledPotato";
 import RawPotato from "./rawPotato";
 import Result from "./result";
-import { StopList } from "./rng";
-import { getTangibleDesc } from "./tangible";
-import roastAFreshTurkey from "./turkey";
 import { GetRoomDesc } from "./room";
 import { gravyBoat, reheatGravy, stowGravy } from "./gravy";
+import lerkey from "./lerkey";
 
 
 const validKeys = 'abcdefghijklmnopqrstuvwxyz ';
@@ -36,29 +34,43 @@ const getNarrowedSuggestions = (suggestions: Command[], k: string[]) => {
 }
 
 
-const getCommands = (cmdList: Command[]) => 
+const getCommands = (cmdList: Command[], turkey: lerkey) => 
     cmdList.filter(x => {
         if (x.check) {
-            return x.check();
+            return x.check(turkey);
         }
         return true;
     })
 
 
-const getAllSuggestions = () => {
-    const turkey = roastAFreshTurkey();
-    const player = turkey.things.filter(x => x.name === 'player')[0];
-    const r = turkey.rooms.filter(x => x.name === player.room)[0];
-    const a = getCommands(r.commands());
-    const [c, t] = [turkey.characters, turkey.things].map(x => x.filter(x => x.room === player.room).map((x => getCommands(x.commands()))));
+const getAllSuggestions = (turkey: lerkey) => {
+    const gravy = reheatGravy();
+    const r = turkey.rooms.filter(x => x.name === gravy.rooms['player'])[0];
+    const a = getCommands([...r.commands()], turkey);
     const y = [...a];
-    c.map(x => y.push(...x));
-    t.map(x => y.push(...x));
+    const itemList = [...turkey.things.map(t => t.name), ...turkey.characters.map(t => t.name)];
+    const inSameRoom = itemList.filter((thing: string) => gravy.rooms[thing] === r.name);
+    const inPlayer = turkey.things.filter((thing) => gravy.inside[thing.name] === 'player');
+    for (const itemName of inSameRoom) {
+        for (const thing of turkey.things) {
+            if (itemName === thing.name) {
+                y.push(...getCommands(thing.commands(), turkey));
+            }
+        }
+        for (const char of turkey.characters) {
+            if (itemName === char.name) {
+                y.push(...getCommands(char.commands(), turkey));
+            }
+        }
+    }
+    for (const thing of inPlayer) {
+        y.push(...getCommands(thing.commands(), turkey));
+    }
     return y;
 }
 
 
-const Gobble = (props: {}) => {
+const Gobble = (props: { turkey: lerkey }) => {
 
     const [keyBuf, setKeyBuf] = useState<string[]>([]);
     const [output, setOutput] = useState<Result | undefined>(undefined);
@@ -76,7 +88,7 @@ const Gobble = (props: {}) => {
     const execute = (s: Command) => {
         if (s) {
             if (s.verify) {
-                const t = s.verify();
+                const t = s.verify(props.turkey);
                 if (t) {
                     setOutput({
                         text: t
@@ -85,7 +97,7 @@ const Gobble = (props: {}) => {
                     return;
                 }
             }
-            const a = s.action() ?? <p></p>;
+            const a = s.action(props.turkey) ?? <p></p>;
             setOutput({
                 text: a
             });
@@ -101,7 +113,7 @@ const Gobble = (props: {}) => {
     const handleGreenBeans = (event: KeyboardEvent) => {
         const key = event.key.toLowerCase();
         if (validKeys.indexOf(key) > -1) {
-            const suggestions = getAllSuggestions();
+            const suggestions = getAllSuggestions(props.turkey);
             const ch = getNarrowedSuggestions(suggestions, [...keyBuf, key]);
             if (ch.length > 1) {
                 const buf = { ...ch[0] };
@@ -158,7 +170,7 @@ const Gobble = (props: {}) => {
 
 
     return <div className="primary-display">
-        <Cranberries output={output ?? { text: <div><GetRoomDesc /></div> }} />
+        <Cranberries output={output ?? { text: <div><GetRoomDesc turkey={props.turkey} /></div> }} />
         {(keyBuf.length === 0) && <RawPotato />}
         {(keyBuf.length > 0 && command) && <MashedPotato selector={selector} execute={execute} suggestions={choices} />}
         {(keyBuf.length > 0 && !command) && <SpoiledPotato />}
