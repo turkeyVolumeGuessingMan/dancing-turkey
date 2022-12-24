@@ -1,4 +1,5 @@
 import { ShowInventory } from "../../lib/casserole";
+import { FreshChoppedGarlic } from "../../lib/room";
 import Thing from "../../lib/thing"
 
 const playerThing: Thing = {
@@ -12,12 +13,19 @@ const playerThing: Thing = {
     commands: () => [
         {
             label: `Inventory`,
-            action: (turkey) => <ShowInventory turkey={turkey} />
+            action: turkey => <ShowInventory turkey={turkey} />
         },
         {
             label: `Examine myself`,
             action: () => <p>Hello world</p>
-        }
+        },
+        {
+            label: `Look around`,
+
+            action: turkey => {
+                return <FreshChoppedGarlic turkey={turkey} />
+            }
+        },
     ]    
 }
 

@@ -1,6 +1,5 @@
 import lerkey from "../../lib/lerkey";
 import { StopList } from "../../lib/rng";
-import { GetRoomDesc } from "../../lib/room";
 
 const startRoom = {
     name: 'startRoom',
@@ -18,17 +17,10 @@ const startRoom = {
             ]} />
         },
         {
-            label: `Look around`,
-
-            action: (turkey: lerkey) => {
-                return <GetRoomDesc turkey={turkey} />
-            }
-        },
-        {
             label: `open map`,
     
             verify: () => <div>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Nibh sit amet commodo nulla facilisi nullam vehicula. Diam sollicitudin tempor id eu nisl nunc mi. Blandit aliquam etiam erat velit. Pellentesque habitant morbi tristique senectus et netus et malesuada fames. Aenean sed adipiscing diam donec adipiscing. Gravida dictum fusce ut placerat orci nulla pellentesque dignissim. Vitae tortor condimentum lacinia quis. Egestas quis ipsum suspendisse ultrices. Morbi tincidunt augue interdum velit euismod in pellentesque massa.
+                Lorem ipsum <em>dolor</em> sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Nibh sit amet commodo nulla facilisi nullam vehicula. Diam sollicitudin tempor id eu nisl nunc mi. Blandit aliquam etiam erat velit. Pellentesque habitant morbi tristique senectus et netus et malesuada fames. Aenean sed adipiscing diam donec adipiscing. Gravida dictum fusce ut placerat orci nulla pellentesque dignissim. Vitae tortor condimentum lacinia quis. Egestas quis ipsum suspendisse ultrices. Morbi tincidunt augue interdum velit euismod in pellentesque massa.
             </div>,
     
             action: () => {

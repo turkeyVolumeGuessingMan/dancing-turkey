@@ -136,6 +136,11 @@ button.selectedSuggestion {
   animation: cursor-blink 1.5s steps(2) infinite;
 }
 
+em {
+  font-style: normal;
+  color: #f9f9f9;
+}
+
 
 @keyframes from-right {
   0%   {

@@ -15,7 +15,7 @@ export const GetRoomObj = () => {
 }
 
 
-export const GetRoomDesc = (props: { turkey: lerkey }) => {
+const GetRoomDesc = (props: { turkey: lerkey }) => {
     const gravy = reheatGravy();
     const r = props.turkey.rooms.filter(x => x.name === gravy.rooms['player'])[0];
     const y = [r.desc()];
@@ -45,5 +45,16 @@ export const GetRoomDesc = (props: { turkey: lerkey }) => {
     }
     return <div>{y.map((x, index) => <div key={`descItem-${index}`}>{x}</div>)}</div>;
 }
+
+
+export const FreshChoppedGarlic = (props: { turkey: lerkey}) => {
+    const gravy = reheatGravy();
+    if (gravy.conversing) {
+        return <GetRoomDesc turkey={props.turkey} />
+    } else {
+        return <GetRoomDesc turkey={props.turkey} />
+    }
+}
+
 
 export default Room;

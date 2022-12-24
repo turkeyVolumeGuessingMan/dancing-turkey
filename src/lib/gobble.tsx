@@ -5,7 +5,7 @@ import MashedPotato from "./mashedPotato";
 import SpoiledPotato from "./spoiledPotato";
 import RawPotato from "./rawPotato";
 import Result from "./result";
-import { GetRoomDesc } from "./room";
+import { FreshChoppedGarlic } from "./room";
 import { gravyBoat, reheatGravy, stowGravy } from "./gravy";
 import lerkey from "./lerkey";
 
@@ -46,7 +46,7 @@ const getCommands = (cmdList: Command[], turkey: lerkey) =>
 const getAllSuggestions = (turkey: lerkey) => {
     const gravy = reheatGravy();
     const r = turkey.rooms.filter(x => x.name === gravy.rooms['player'])[0];
-    const a = getCommands([...r.commands()], turkey);
+    const a = getCommands([...r.commands(turkey)], turkey);
     const y = [...a];
     const itemList = [...turkey.things.map(t => t.name), ...turkey.characters.map(t => t.name)];
     const inSameRoom = itemList.filter((thing: string) => gravy.rooms[thing] === r.name);
@@ -54,17 +54,17 @@ const getAllSuggestions = (turkey: lerkey) => {
     for (const itemName of inSameRoom) {
         for (const thing of turkey.things) {
             if (itemName === thing.name) {
-                y.push(...getCommands(thing.commands(), turkey));
+                y.push(...getCommands(thing.commands(turkey), turkey));
             }
         }
         for (const char of turkey.characters) {
             if (itemName === char.name) {
-                y.push(...getCommands(char.commands(), turkey));
+                y.push(...getCommands(char.commands(turkey), turkey));
             }
         }
     }
     for (const thing of inPlayer) {
-        y.push(...getCommands(thing.commands(), turkey));
+        y.push(...getCommands(thing.commands(turkey), turkey));
     }
     return y;
 }
@@ -170,7 +170,7 @@ const Gobble = (props: { turkey: lerkey }) => {
 
 
     return <div className="primary-display">
-        <Cranberries output={output ?? { text: <div><GetRoomDesc turkey={props.turkey} /></div> }} />
+        <Cranberries output={output ?? { text: <div><FreshChoppedGarlic turkey={props.turkey} /></div> }} />
         {(keyBuf.length === 0) && <RawPotato />}
         {(keyBuf.length > 0 && command) && <MashedPotato selector={selector} execute={execute} suggestions={choices} />}
         {(keyBuf.length > 0 && !command) && <SpoiledPotato />}

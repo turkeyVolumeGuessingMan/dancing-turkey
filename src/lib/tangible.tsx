@@ -3,6 +3,7 @@ import { ReactElement } from "react";
 import ReactDOMServer from "react-dom/server";
 import Command from "./command";
 import { reheatGravy, stowGravy } from "./gravy";
+import lerkey from "./lerkey";
 import stringToHash from "./stringToHash";
 
 type Tangible = {
@@ -40,7 +41,7 @@ type Tangible = {
      * List of commands to be associated with this game tangible.
      * @returns Command list.
      */
-    commands: () => Command[]
+    commands: (turkey: lerkey) => Command[]
 
 }
 
