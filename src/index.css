@@ -1,3 +1,16 @@
+
+@media screen and (min-width: 480px) {
+  body {
+    font-size: x-large;
+  }
+  button {
+    font-size: x-large;
+  }
+  input.inputField {
+    font-size: x-large;
+  }
+}
+
 :root {
 
   color-scheme: light dark;
@@ -14,16 +27,16 @@
 .primary-display {
   display: flex;
   flex-direction: column;
-  justify-content: space-evenly;
+  justify-content: space-between;
   align-items: center;
-  width: 100%;
-  height: 90%;
+  min-height: 90vh;
 }
 
 
 .potatoBar {
-  width: 100%;
-  height: 4em;
+  width: 80vw;
+  height: 20vh;
+  margin-bottom: 5px;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -31,20 +44,18 @@
   align-items: center;
   color: #C84B31;
   font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-  font-size: x-large;
 }
 
 
 .stuffingArea {
   width: 60ch;
-  height: 75vh;
+  max-width: 80vw;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   color: burlywood;
   font-family: Georgia, 'Times New Roman', Times, serif;
-  font-size: x-large;
   line-height: 1.5em;
 }
 
@@ -71,10 +82,8 @@ a:hover {
 body {
   margin: 0;
   display: flex;
-  place-items: center;
-  overflow: hidden;
-  min-width: 320px;
-  min-height: 100vh;
+  justify-content: flex-start;
+  align-items: center;
 }
 
 h1 {
@@ -86,11 +95,11 @@ button {
   border-radius: 8px;
   border: 1px solid transparent;
   padding: 0.6em 1.2em;
-  font-size: 1em;
   font-weight: 500;
   font-family: inherit;
   background-color: #1a1a1a;
   cursor: pointer;
+  margin: 2px;
   transition: border-color 0.25s;
 }
 button:hover {
@@ -107,7 +116,6 @@ button.suggestions {
   background-color: #191919;
   border: none;
   font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-  font-size: x-large;
 }
 
 button.suggestions:hover {
@@ -121,7 +129,6 @@ button.selectedSuggestion {
   background-color: #191919;
   border: none;
   font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-  font-size: x-large;
   animation-name: expand;
   animation-duration: 0.28s;
 }
@@ -132,9 +139,39 @@ button.selectedSuggestion {
 }
 
 
+/*
 .cursorBlink {
   animation: cursor-blink 1.5s steps(2) infinite;
 }
+*/
+
+
+form.inputForm {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 5px;
+  max-width: 320px;
+  width: 80vw;
+  height: 10vh;
+}
+
+
+input.inputField {
+  text-align: center;
+  border: 0px solid;
+  width: 80vw;
+  max-width: 400px;
+}
+
+
+button.formButton {
+  width: 1;
+  height: 1;
+  visibility: hidden;
+}
+
 
 em {
   font-style: normal;

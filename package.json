@@ -1,7 +1,7 @@
 {
-  "name": "dancing-turkey",
+  "name": "zerlak",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
   "scripts": {
     "predev": "node ./prepareRoastingPan.cjs",

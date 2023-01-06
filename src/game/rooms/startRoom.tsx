@@ -1,54 +1,28 @@
+import * as casserole from "../../lib/casserole";
+import { highlight } from "../../lib/gobble";
 import lerkey from "../../lib/lerkey";
-import { StopList } from "../../lib/rng";
+import Room from "../../lib/room";
 
-const startRoom = {
+const room: Room = {
     name: 'startRoom',
 
-    desc: () => <p>The prison cell is cold!</p>,
+    desc: () => <p>Shadows grow longer in the gathering dark. A chill rides on the breeze whistling through the branches.
+        Ahead, a spark of orange {highlight('light')} glimmers between the trees.
+    </p>,
 
-    commands: () => [
+    commands: (turkey: lerkey) => [
         {
-            label: `open chest`,
+            label: `Follow the light`,
     
-            action: () => <StopList list={[
-                <p>There's nothing in the chest. Really!</p>,
-                <p>Did you hear me? There's nothing in the chest!</p>,
-                <p>For the last time....</p>
-            ]} />
+            action: () => casserole.nav('doorStep', turkey)
         },
         {
-            label: `open map`,
+            label: `Explore the forest`,
     
-            verify: () => <div>
-                Lorem ipsum <em>dolor</em> sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Nibh sit amet commodo nulla facilisi nullam vehicula. Diam sollicitudin tempor id eu nisl nunc mi. Blandit aliquam etiam erat velit. Pellentesque habitant morbi tristique senectus et netus et malesuada fames. Aenean sed adipiscing diam donec adipiscing. Gravida dictum fusce ut placerat orci nulla pellentesque dignissim. Vitae tortor condimentum lacinia quis. Egestas quis ipsum suspendisse ultrices. Morbi tincidunt augue interdum velit euismod in pellentesque massa.
-            </div>,
+            verify: () => <p>You could easily get lost.</p>,
     
-            action: () => {
-                console.log("action complete")
-            },
-    
-            score: -10
-        },
-        {
-            label: `read book`,
-    
-            verify: () => <p><q>I don't have the book.</q></p>,
-    
-            action: () => {
-                console.log("action complete")
-            }
-        },
-        {
-            label: `wear hat`,
-    
-            verify: () => <p><q>I don't have the hat.</q></p>,
-    
-            action: () => {
-                console.log("action complete")
-            }
         }
-    
     ]
 };
 
-export default startRoom;
+export default room;

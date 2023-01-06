@@ -2,6 +2,7 @@ import Command from "./command";
 import { reheatGravy, stowGravy } from "./gravy";
 import lerkey from "./lerkey";
 import { FreshChoppedGarlic } from "./room";
+import { getTangibleDesc } from "./tangible";
 
 export const getInsideObj = () => {
     const gravy = reheatGravy();
@@ -12,8 +13,8 @@ export const getInsideObj = () => {
 
 export const GetInventoryDesc = (props: { name: string, turkey: lerkey }) => {
     const item = props.turkey.things.filter(x => x.name === props.name)[0];
-    if (item.shortDesc) {
-        return item.shortDesc();
+    if (item.inventoryDesc) {
+        return item.inventoryDesc();
     } else {
         return <div>{item.name}</div>;
     }
@@ -117,17 +118,11 @@ export const getName = (item: string, turkey: lerkey) => {
     for (const s of searchQuery) {
         for (const n of s) {
             if (item === n.name) {
-                return n.name;
-            }
-        }
-        for (const n of s) {
-            if (item === n.name) {
-                return n.name;
-            }
-        }
-        for (const n of s) {
-            if (item === n.name) {
-                return n.name;
+                if (n.shortDesc) {
+                    return n.shortDesc();
+                } else {
+                    return n.name;
+                }
             }
         }
     }
@@ -141,6 +136,16 @@ export const endConversation = (turkey: lerkey) => {
 }
 
 
+export const gravyBoat = (callBoat: (b: any, turn: number) => void) =>{
+    const gravy = reheatGravy();
+    const turn = gravy['turn'] ?? 0;
+    const boat = gravy['boat'] ?? {};
+    callBoat(boat, turn);
+    gravy.boat = {...boat};
+    stowGravy(gravy);
+}
+
+
 export const nav = (room: string, turkey: lerkey) => {
     moveToRoom('player', room);
     return <FreshChoppedGarlic turkey={turkey} />
@@ -149,26 +154,15 @@ export const nav = (room: string, turkey: lerkey) => {
 
 export const takeableObj = (cmdItem: string, turkey: lerkey): Command[] => {
     const name = `${getName(cmdItem, turkey)}`;
-    const takenMsg = <p>Taken.</p>;
-    const action = () => {
-        moveToInventory(cmdItem);
-        return takenMsg;
-    }
-    const check = () => (canSee(cmdItem) && !isDirectlyIn(cmdItem, 'player'));
-    const labels = [
-        `Get the ${name}`,
-        `Pick up the ${name}`,
-        `Grab the ${name}`,
-        `Take the ${name}`
-    ];
     return [
-        ...labels.map(label => {
-            return {
-                check: check,
-                label: label,
-                action: action
+        {
+            check: () => (canSee(cmdItem) && !isDirectlyIn(cmdItem, 'player')),
+            label: `Take the ${name}`,
+            action: () => {
+                moveToInventory(cmdItem);
+                return <p>Taken.</p>;
             }
-        }),
+        },
         {
             check: () => isDirectlyIn(cmdItem, 'player'),
             label: `Drop the ${name}`,
@@ -177,6 +171,31 @@ export const takeableObj = (cmdItem: string, turkey: lerkey): Command[] => {
                 return <p>Dropped.</p>
             }
         }
-    ];
+    ]
 }
 
+
+export const getDescByName = (name: string, turkey: lerkey) => {
+    const searchQuery = [turkey.characters, turkey.things];
+    for (const s of searchQuery) {
+        for (const n of s) {
+            if (name === n.name) {
+                return getTangibleDesc(n);
+            }
+        }
+    }
+    return <div>{name}</div>
+}
+
+
+export const examinableObj = (cmdItem: string, turkey: lerkey): Command => {
+    const name = `${getName(cmdItem, turkey)}`;
+    const searchQuery = [turkey.rooms, turkey.characters, turkey.things];
+    return {
+        check: () => canSee(cmdItem),
+        label: `Examine the ${name}`,
+        action: () => {
+            return <div>{getDescByName(cmdItem, turkey)}</div>
+        }
+    }
+}

@@ -7,7 +7,7 @@ export function getTurn(): number {
 }
 
 
-export const gravyBoat = () => {
+export const pourTheGravy = () => {
     localStorage.clear();
 }
 

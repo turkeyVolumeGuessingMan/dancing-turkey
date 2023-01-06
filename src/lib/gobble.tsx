@@ -6,11 +6,10 @@ import SpoiledPotato from "./spoiledPotato";
 import RawPotato from "./rawPotato";
 import Result from "./result";
 import { FreshChoppedGarlic } from "./room";
-import { gravyBoat, reheatGravy, stowGravy } from "./gravy";
+import { pourTheGravy, reheatGravy, stowGravy } from "./gravy";
 import lerkey from "./lerkey";
 
 
-const validKeys = 'abcdefghijklmnopqrstuvwxyz ';
 
 
 const lbl = (c: Command) =>
@@ -34,7 +33,7 @@ const getNarrowedSuggestions = (suggestions: Command[], k: string[]) => {
 }
 
 
-const getCommands = (cmdList: Command[], turkey: lerkey) => 
+const getCommands = (cmdList: Command[], turkey: lerkey) =>
     cmdList.filter(x => {
         if (x.check) {
             return x.check(turkey);
@@ -64,40 +63,29 @@ const getAllSuggestions = (turkey: lerkey) => {
         }
     }
     for (const thing of inPlayer) {
-        y.push(...getCommands(thing.commands(turkey), turkey));
+        y.push(...getCommands(thing.commands(turkey), turkey).map(t => {
+            t.label = `${t.label} (in Inventory)`;
+            return t;
+        }));
     }
     return y;
 }
 
 
-const Gobble = (props: { turkey: lerkey }) => {
-
-    const [keyBuf, setKeyBuf] = useState<string[]>([]);
-    const [output, setOutput] = useState<Result | undefined>(undefined);
-    const [selector, setSelector] = useState(1);
-    const [command, setCommand] = useState<Command | undefined>(undefined);
-    const [choices, setChoices] = useState<Command[]>([]);
-
-    const clearStuffing = () => {
-        setCommand(undefined);
-        setKeyBuf([]);
-        setSelector(1);
-    }
-
-
-    const execute = (s: Command) => {
-        if (s) {
-            if (s.verify) {
-                const t = s.verify(props.turkey);
-                if (t) {
-                    setOutput({
-                        text: t
-                    });
-                    clearStuffing();
-                    return;
-                }
+const execute = (s: Command, setOutput: (s: Result | undefined) => void, turkey: lerkey, clearField: () => void) => {
+    if (s) {
+        if (s.verify) {
+            const t = s.verify(turkey);
+            if (t) {
+                setOutput({
+                    text: t
+                });
+                clearField();
+                return;
             }
-            const a = s.action(props.turkey) ?? <p></p>;
+        }
+        if (s.action) {
+            const a = s.action(turkey) ?? <p></p>;
             setOutput({
                 text: a
             });
@@ -105,75 +93,124 @@ const Gobble = (props: { turkey: lerkey }) => {
             const turn = gravy.turn ?? 0;
             gravy.turn = turn + 1;
             stowGravy(gravy);
-            clearStuffing();
+            clearField();
         }
+    }
+}
+
+
+export let highlight = (str: string) => {
+    return <em onClick={() => {}}>
+        {str}
+    </em>
+}
+
+
+const Gobble = (props: { turkey: lerkey }) => {
+
+    const [keyBuf, setKeyBuf] = useState('');
+    const [command, setCommand] = useState<Command | undefined>(undefined);
+    const [output, setOutput] = useState<Result | undefined>(undefined);
+    const [selector, setSelector] = useState(1);
+    const [choices, setChoices] = useState<Command[]>([]);
+
+
+    const clearStuffing = () => {
+        setCommand(undefined);
+        setKeyBuf('');
+        setSelector(1);
     }
 
 
-    const handleGreenBeans = (event: KeyboardEvent) => {
-        const key = event.key.toLowerCase();
-        if (validKeys.indexOf(key) > -1) {
-            const suggestions = getAllSuggestions(props.turkey);
-            const ch = getNarrowedSuggestions(suggestions, [...keyBuf, key]);
-            if (ch.length > 1) {
-                const buf = { ...ch[0] };
-                ch[0] = { ...ch[1] };
-                ch[1] = { ...buf };
-            }
-            setKeyBuf([...keyBuf, key]);
-            setSelector(1);
-            setChoices([...ch]);
-            if (ch.length === 1) {
-                setSelector(0);
-                setCommand(ch[0]);
-            } else {
-                setSelector(1);
-                setCommand(ch[1]);
-            }
-        } else if (key === 'backspace') {
-            if (keyBuf.length > 0) {
-                if (command) {
-                    keyBuf.pop();
-                    setKeyBuf([...keyBuf]);
-                    setSelector(1);
-                } else {
-                    setKeyBuf([]);
-                    setSelector(1);
-                }
-            }
-        } else if (key === '=') {
-            gravyBoat();
-        } else if (key === 'arrowleft') {
-            if ((selector > 0)) {
-                setSelector(selector - 1);
-                setCommand(choices[selector - 1]);
-            }
-        } else if (key === 'arrowright') {
-            if ((selector < 2)) {
-                setSelector(selector + 1);
-                setCommand(choices[selector + 1]);
-            }
-        } else if (key === 'enter') {
-            if (command) {
-                execute(command);
-            }
-        }
+
+    const handleGreenBeans = (event: HTMLInputElement) => {
     }
 
 
+    /*
     useEffect(() => {
 
-        document.addEventListener("keydown", handleGreenBeans);
-        return () => document.removeEventListener("keydown", handleGreenBeans);
+        //document.addEventListener("keydown", handleGreenBeans);
+        //return () => document.removeEventListener("keydown", handleGreenBeans);
 
     });
+    */
+
+
+    const cannedYams = (value: string) => {
+        const suggestions = getAllSuggestions(props.turkey);
+        const cb = getNarrowedSuggestions(suggestions, [...value]);
+        if (cb.length > 1) {
+            const buf = { ...cb[0] };
+            cb[0] = { ...cb[1] };
+            cb[1] = { ...buf };
+        }
+        setKeyBuf(value);
+        setSelector(1);
+        setChoices([...cb]);
+        if (cb.length === 1) {
+            setSelector(0);
+            setCommand(cb[0]);
+        } else {
+            setSelector(1);
+            setCommand(cb[1]);
+        }
+    }
+
+
+    highlight = (str: string) => {
+        return <em onClick={() => {
+            cannedYams(str);
+            setKeyBuf(str);
+        }}>
+            {str}
+        </em>
+    }
 
 
     return <div className="primary-display">
         <Cranberries output={output ?? { text: <div><FreshChoppedGarlic turkey={props.turkey} /></div> }} />
-        {(keyBuf.length === 0) && <RawPotato />}
-        {(keyBuf.length > 0 && command) && <MashedPotato selector={selector} execute={execute} suggestions={choices} />}
+        {(keyBuf === '') && <RawPotato />}
+        {(keyBuf.length > 0 && command) && <MashedPotato selector={selector} execute={c => execute(c, setOutput, props.turkey, clearStuffing)} suggestions={choices} />}
         {(keyBuf.length > 0 && !command) && <SpoiledPotato />}
+        <form
+            className="inputForm"
+            onSubmit={e => {
+                e.preventDefault();
+            }}
+        >
+            <input type='text'
+                className="inputField"
+                autoFocus={true}
+                value={keyBuf}
+                onKeyDown={e => {
+                    if (e.key.toLowerCase() === 'tab') {
+                        e.preventDefault();
+                        let s = selector + 1;
+                        if (s >= choices.length || s > 2) {
+                            s = 0;
+                        }
+                        setSelector(s);
+                    }
+                }}
+                onChange={t => {
+                    const value = t.currentTarget.value.toLowerCase() ?? '';
+                    cannedYams(value);
+                }}
+            />
+            <button
+            className="formButton"
+            onClick={() => {
+                if (keyBuf === '=') {
+                    pourTheGravy();
+                } else {
+                    if (keyBuf.length > 0 && command) {
+                        execute(choices[selector], setOutput, props.turkey, clearStuffing);
+                        setKeyBuf('');
+                    }
+                }
+            }}>Enter</button>
+        </form>
     </div>
 
 }

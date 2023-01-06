@@ -4,6 +4,7 @@ import './App.css'
 import Gobble from './lib/gobble';
 import roastAFreshTurkey from './lib/turkey';
 import lerkey from './lib/lerkey';
+import { pourTheGravy } from './lib/gravy';
 
 const turkey = roastAFreshTurkey();
 

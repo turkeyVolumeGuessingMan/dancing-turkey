@@ -7,7 +7,7 @@ type Command = {
     check?: (turkey: lerkey) => boolean;
     once?: () => boolean;
     verify?: (turkey: lerkey) => ReactElement | void;
-    action: (turkey: lerkey) => ReactElement | void;
+    action?: (turkey: lerkey) => ReactElement | void;
     score?: number;
 
 }

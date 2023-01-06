@@ -1,4 +1,5 @@
 import { ShowInventory } from "../../lib/casserole";
+import { reheatGravy } from "../../lib/gravy";
 import { FreshChoppedGarlic } from "../../lib/room";
 import Thing from "../../lib/thing"
 
@@ -8,16 +9,20 @@ const playerThing: Thing = {
     room: 'startRoom',
 
     desc: () => <p>Here i am</p>,
-    shortDesc: () => <p>Player</p>,
+    shortDesc: () => `player`,
 
     commands: () => [
         {
             label: `Inventory`,
-            action: turkey => <ShowInventory turkey={turkey} />
+            action: turkey => {
+                const gravy = reheatGravy();
+                gravy.showInventory = true;
+                return <ShowInventory turkey={turkey} />
+            }
         },
         {
             label: `Examine myself`,
-            action: () => <p>Hello world</p>
+            action: () => <p>You look very much like yourself.</p>
         },
         {
             label: `Look around`,
@@ -26,7 +31,7 @@ const playerThing: Thing = {
                 return <FreshChoppedGarlic turkey={turkey} />
             }
         },
-    ]    
+    ]
 }
 
 export default playerThing;

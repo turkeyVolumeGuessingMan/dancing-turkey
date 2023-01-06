@@ -26,16 +26,16 @@ type Tangible = {
     firstDesc?: () => ReactElement;
 
     /**
-     * Get a one or two word description for the tangible object.
+     * Returns the description of the object in an inventory listing.
      * @returns Description in React elements.
      */
-    specialDesc?: () => ReactElement;
+    inventoryDesc?: () => ReactElement;
 
     /**
      * Get a one or two word description for the tangible object.
      * @returns Description in React elements.
      */
-    shortDesc?: () => ReactElement;
+    shortDesc?: () => string;
 
     /**
      * List of commands to be associated with this game tangible.
@@ -47,13 +47,14 @@ type Tangible = {
 
 
 export const getTangibleDesc = (n: Tangible) => {
-    if (n?.firstDesc) {
+    if (n.firstDesc) {
         const first = n.firstDesc();
         const s = ReactDOMServer.renderToString(first);
         const hash = `dnd-${stringToHash(s)}`;
         const gravy = reheatGravy();
-        if (!gravy.map[hash]) {
-            gravy.map[hash] = true;
+        const turn = gravy.turn;
+        if (!gravy[hash] || gravy[hash] === turn) {
+            gravy[hash] = turn;
             stowGravy(gravy);
             return first;
         }
@@ -61,9 +62,8 @@ export const getTangibleDesc = (n: Tangible) => {
     const r = n.desc();
     if (n) {
         return r;
-    } else {
-        return [];
     }
+    return <div></div>;
 }
 
 export default Tangible;

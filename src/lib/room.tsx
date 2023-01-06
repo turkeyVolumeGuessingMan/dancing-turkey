@@ -24,22 +24,12 @@ const GetRoomDesc = (props: { turkey: lerkey }) => {
     for (const itemName of inSameRoom) {
         for (const thing of props.turkey.things) {
             if (itemName === thing.name) {
-                if (thing.specialDesc) {
-                    const d = thing.specialDesc();
-                    if (d) {
-                        y.push(d);
-                    }
-                }
+                y.push(getTangibleDesc(thing));
             }
         }
         for (const char of props.turkey.characters) {
             if (itemName === char.name) {
-                if (char.specialDesc) {
-                    const d = char.specialDesc();
-                    if (d) {
-                        y.push(d);
-                    }
-                }
+                y.push(getTangibleDesc(char));
             }
         }
     }
@@ -47,7 +37,7 @@ const GetRoomDesc = (props: { turkey: lerkey }) => {
 }
 
 
-export const FreshChoppedGarlic = (props: { turkey: lerkey}) => {
+export const FreshChoppedGarlic = (props: { turkey: lerkey }) => {
     const gravy = reheatGravy();
     if (gravy.conversing) {
         return <GetRoomDesc turkey={props.turkey} />
